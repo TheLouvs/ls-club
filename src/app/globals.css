@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Palette Golf — Light Theme */
+  --color-lime:        #7BBF25;
+  --color-lime-light:  #E4F0CC;
+  --color-lime-dark:   #5A9010;
+
+  --color-dark-green:  #1A3410;
+  --color-dark-green2: #263D18;
+
+  --color-bg-app:      #EEF2E8;
+  --color-bg-surface:  #FFFFFF;
+
+  --color-gold:        #C9A84C;
+  --color-gold-light:  #D9BC6E;
+
+  --color-text-1:      #0D1A09;
+  --color-text-2:      #587050;
+  --color-text-3:      #8FAA80;
+
+  --color-border:      #D4E4C4;
+  --color-border-dark: #B8CCA8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0F2318;
+  color: #F5F0E8;
+  font-family: var(--font-sans), -apple-system, sans-serif;
 }
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2A4A35; border-radius: 4px; }
+
+/* ── Cards ───────────────────────────────────── */
+.card-white {
+  background: #1B3A2A;
+  border: 1px solid #2A4A35;
+  border-radius: 16px;
+}
+
+.card-white:hover {
+  background: #1F4230;
+  border-color: #2A4A35;
+}
+
+.card-white-sm {
+  background: #1B3A2A;
+  border: 1px solid #2A4A35;
+  border-radius: 12px;
+}
+
+/* ── Dark green / emphasis cards ─────────────── */
+.card-dark-green {
+  background: #1B3A2A;
+  border: 1px solid #C9A84C;
+  border-radius: 16px;
+}
+
+/* ── Gold tinted card ────────────────────────── */
+.card-lime-tinted {
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 12px;
+}
+
+/* ── Legacy aliases ─────────────────────────── */
+.card-premium {
+  background: #1B3A2A;
+  border: 1px solid #2A4A35;
+  border-radius: 16px;
+}
+.card-dark {
+  background: #1B3A2A;
+  border: 1px solid #2A4A35;
+  border-radius: 16px;
+}
+.card-elevated {
+  background: #1B3A2A;
+  border: 1px solid #C9A84C;
+  border-radius: 20px;
+}
+
+/* Placeholder */
+input::placeholder { color: #3A4A3A; }
+textarea::placeholder { color: #3A4A3A; }

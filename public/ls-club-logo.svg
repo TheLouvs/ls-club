@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E8C96A"/>
+      <stop offset="40%" stop-color="#C9A84C"/>
+      <stop offset="75%" stop-color="#A8882E"/>
+      <stop offset="100%" stop-color="#C9A84C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" ry="44" fill="#1B3A22"/>
+  <!-- LS letters -->
+  <text
+    x="100"
+    y="112"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="86"
+    font-weight="700"
+    fill="url(#gold)"
+    letter-spacing="-2"
+  >LS</text>
+  <!-- Separator line -->
+  <line x1="44" y1="126" x2="156" y2="126" stroke="url(#gold)" stroke-width="1.2"/>
+  <!-- CLUB text -->
+  <text
+    x="100"
+    y="158"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-weight="400"
+    fill="url(#gold)"
+    letter-spacing="8"
+  >CLUB</text>
+</svg>
