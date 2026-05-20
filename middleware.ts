@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { decodeSession } from "@/lib/session";
 
 const PUBLIC_PATHS = ["/", "/auth"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Laisse passer les routes publiques et les assets
   const isPublic =
     PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/")) ||
     pathname.startsWith("/_next") ||
@@ -14,12 +14,17 @@ export function middleware(request: NextRequest) {
 
   if (isPublic) return NextResponse.next();
 
-  // Vérifie le cookie de session
-  const session = request.cookies.get("ls_session");
-  if (!session) {
+  const sessionCookie = request.cookies.get("ls_session");
+  if (!sessionCookie) {
     const loginUrl = new URL("/auth/connexion", request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  const session = decodeSession(sessionCookie.value);
+
+  if (pathname.startsWith("/admin") && !session?.isAdmin) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

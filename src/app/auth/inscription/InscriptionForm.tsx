@@ -33,25 +33,39 @@ export function InscriptionForm({
       className="space-y-4"
       onSubmit={() => sessionStorage.setItem("ls_loading", "1")}
     >
-      <div>
-        <label
-          htmlFor="prenom"
-          className="block text-xs font-semibold mb-1.5"
-          style={{ color: "#C9A84C" }}
-        >
-          Prénom
-        </label>
-        <input
-          id="prenom"
-          name="prenom"
-          type="text"
-          autoComplete="given-name"
-          required
-          placeholder="Laurent"
-          style={inputStyle}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "#C9A84C")}
-          onBlur={(e) => (e.currentTarget.style.borderColor = "#2A4A35")}
-        />
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label htmlFor="prenom" className="block text-xs font-semibold mb-1.5" style={{ color: "#C9A84C" }}>
+            Prénom
+          </label>
+          <input
+            id="prenom"
+            name="prenom"
+            type="text"
+            autoComplete="given-name"
+            required
+            placeholder="Laurent"
+            style={inputStyle}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#C9A84C")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#2A4A35")}
+          />
+        </div>
+        <div className="flex-1">
+          <label htmlFor="nom" className="block text-xs font-semibold mb-1.5" style={{ color: "#C9A84C" }}>
+            Nom
+          </label>
+          <input
+            id="nom"
+            name="nom"
+            type="text"
+            autoComplete="family-name"
+            required
+            placeholder="Seinger"
+            style={inputStyle}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#C9A84C")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#2A4A35")}
+          />
+        </div>
       </div>
 
       <div>
