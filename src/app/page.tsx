@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle, ChevronRight, Play, Star, DollarSign, Map, UserX, TrendingDown, Users, Shield, CreditCard, RotateCcw, HelpCircle, Brain, Video, Wifi, MessageSquare, Trophy } from "lucide-react";
 import { AppMockup } from "@/components/landing/AppMockup";
 import { Avatar } from "@/components/landing/Avatar";
@@ -223,14 +224,7 @@ export default function LandingPage() {
         }}
       >
         <div className="flex items-center gap-2">
-          <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center"
-            style={{ background: "linear-gradient(145deg, #1B3A2A, #1F4230)" }}
-          >
-            <span className="font-bold text-sm" style={{ color: "#C9A84C" }}>
-              LS
-            </span>
-          </div>
+          <Image src="/ls-club-logo.svg" alt="LS Club" width={32} height={32} className="rounded-xl" />
           <span className="font-serif font-bold text-base" style={{ color: "#F5F0E8" }}>
             LS Club
           </span>
@@ -1039,14 +1033,7 @@ export default function LandingPage() {
         style={{ borderTop: "1px solid #2A4A35", background: "#0A1A10" }}
       >
         <div className="flex items-center justify-center gap-2 mb-3">
-          <div
-            className="w-6 h-6 rounded-lg flex items-center justify-center"
-            style={{ background: "#1B3A2A" }}
-          >
-            <span className="font-bold text-[10px]" style={{ color: "#C9A84C" }}>
-              LS
-            </span>
-          </div>
+          <Image src="/ls-club-logo.svg" alt="LS Club" width={24} height={24} className="rounded-lg" />
           <span className="font-serif font-bold text-sm" style={{ color: "#F5F0E8" }}>
             LS Club
           </span>
