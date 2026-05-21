@@ -20,40 +20,84 @@ type ConversationEntry = {
   messages: Message[];
 };
 
-// ─── Mock history ─────────────────────────────────────────────────────────────
+// ─── localStorage persistence ──────────────────────────────────────────────────
 
-const MOCK_HISTORY: ConversationEntry[] = [
-  {
-    id: "h-1",
-    date: "10 Mai",
-    snippet: "Comment améliorer mon putting ?",
-    messages: [
-      { role: "assistant", content: "Bonjour ! Que puis-je faire pour vous aujourd'hui ?" },
-      { role: "user",      content: "Comment améliorer mon putting ?" },
-      { role: "assistant", content: "Pour le putting, concentrez-vous sur le **rythme du pendule** et la lecture de pente avant chaque coup." },
-    ],
-  },
-  {
-    id: "h-2",
-    date: "8 Mai",
-    snippet: "Mon drive part à gauche…",
-    messages: [
-      { role: "assistant", content: "Bonjour ! Que puis-je faire pour vous aujourd'hui ?" },
-      { role: "user",      content: "Mon drive part à gauche, comment corriger ?" },
-      { role: "assistant", content: "Un départ à gauche indique souvent une **face fermée à l'impact** ou une rotation trop rapide des hanches." },
-    ],
-  },
-  {
-    id: "h-3",
-    date: "3 Mai",
-    snippet: "Préparer un tournoi stableford",
-    messages: [
-      { role: "assistant", content: "Bonjour ! Que puis-je faire pour vous aujourd'hui ?" },
-      { role: "user",      content: "J'ai un tournoi stableford ce weekend, comment m'y préparer ?" },
-      { role: "assistant", content: "En Stableford, la règle d'or : ne jamais rentrer un **0**. Priorité à la remise en jeu sûre." },
-    ],
-  },
-];
+const LS_CONV_KEY = "ls_ia_discussion_conv";
+const LS_HIST_KEY = "ls_ia_discussion_history";
+const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
+
+type StoredConv = { messages: Message[]; startedAt: number };
+
+function loadStoredConv(): Message[] {
+  try {
+    const raw = localStorage.getItem(LS_CONV_KEY);
+    if (!raw) return FRESH_CONVERSATION;
+    const stored: StoredConv = JSON.parse(raw);
+    if (Date.now() - stored.startedAt > TTL_MS) return FRESH_CONVERSATION;
+    return stored.messages;
+  } catch {
+    return FRESH_CONVERSATION;
+  }
+}
+
+function saveConv(messages: Message[], startedAt: number) {
+  if (!messages.some((m) => m.role === "user")) return;
+  try {
+    localStorage.setItem(LS_CONV_KEY, JSON.stringify({ messages, startedAt }));
+  } catch {}
+}
+
+function loadHistory(): ConversationEntry[] {
+  try {
+    const raw = localStorage.getItem(LS_HIST_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(history: ConversationEntry[]) {
+  try {
+    localStorage.setItem(LS_HIST_KEY, JSON.stringify(history));
+  } catch {}
+}
+
+function getInitialMessages(): Message[] {
+  if (typeof window === "undefined") return FRESH_CONVERSATION;
+  return loadStoredConv();
+}
+
+function getInitialStartedAt(): number {
+  if (typeof window === "undefined") return Date.now();
+  try {
+    const raw = localStorage.getItem(LS_CONV_KEY);
+    if (raw) {
+      const stored: StoredConv = JSON.parse(raw);
+      if (Date.now() - stored.startedAt <= TTL_MS) return stored.startedAt;
+    }
+  } catch {}
+  return Date.now();
+}
+
+// Upsert the current conversation into the history list (always at the top)
+function upsertHistory(
+  conversations: ConversationEntry[],
+  messages: Message[],
+  startedAt: number
+): ConversationEntry[] {
+  const userMessages = messages.filter((m) => m.role === "user");
+  if (userMessages.length === 0) return conversations;
+  const id = `conv-${startedAt}`;
+  const entry: ConversationEntry = {
+    id,
+    date: new Date(startedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+    snippet:
+      userMessages[0].content.slice(0, 60) +
+      (userMessages[0].content.length > 60 ? "…" : ""),
+    messages: [...messages],
+  };
+  return [entry, ...conversations.filter((c) => c.id !== id)];
+}
 
 // ─── Auto-resize textarea ─────────────────────────────────────────────────────
 
@@ -225,7 +269,7 @@ export default function QuestionsModule({
   historyOpen?: boolean;
   onHistoryClose?: () => void;
 }) {
-  const [messages, setMessages]         = useState<Message[]>(MOCK_CONVERSATION);
+  const [messages, setMessages]         = useState<Message[]>(getInitialMessages);
   const [input, setInput]               = useState("");
   const [attachments, setAttachments]   = useState<string[]>([]);
   const [loading, setLoading]           = useState(false);
@@ -234,10 +278,13 @@ export default function QuestionsModule({
   const [showPalette, setShowPalette]   = useState(false);
   const [mousePos, setMousePos]         = useState({ x: 0, y: 0 });
   const [, startTransition]             = useTransition();
-  const [conversations, setConversations] = useState<ConversationEntry[]>(MOCK_HISTORY);
-  const [hasUserMessage, setHasUserMessage] = useState(
-    MOCK_CONVERSATION.some((m) => m.role === "user")
+  const [conversations, setConversations] = useState<ConversationEntry[]>(() =>
+    typeof window === "undefined" ? [] : loadHistory()
   );
+  const [hasUserMessage, setHasUserMessage] = useState(
+    () => getInitialMessages().some((m) => m.role === "user")
+  );
+  const [convStartedAt, setConvStartedAt] = useState<number>(getInitialStartedAt);
 
   const bottomRef  = useRef<HTMLDivElement>(null);
   const paletteRef = useRef<HTMLDivElement>(null);
@@ -245,6 +292,16 @@ export default function QuestionsModule({
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 48, maxHeight: 120 });
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+  // Persist current conversation to localStorage and upsert into history on every message change
+  useEffect(() => {
+    if (!messages.some((m) => m.role === "user")) return;
+    saveConv(messages, convStartedAt);
+    setConversations((prev) => upsertHistory(prev, messages, convStartedAt));
+  }, [messages, convStartedAt]);
+
+  // Persist history to localStorage whenever it changes
+  useEffect(() => { saveHistory(conversations); }, [conversations]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
@@ -316,23 +373,21 @@ export default function QuestionsModule({
   }
 
   function newConversation() {
-    const userMessages = messages.filter((m) => m.role === "user");
-    if (userMessages.length > 0) {
-      const entry: ConversationEntry = {
-        id: `conv-${Date.now()}`,
-        date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
-        snippet: userMessages[0].content.slice(0, 60) + (userMessages[0].content.length > 60 ? "…" : ""),
-        messages: [...messages],
-      };
-      setConversations((prev) => [entry, ...prev]);
-    }
+    // Current conversation is already in history via upsertHistory effect — just start fresh
+    try { localStorage.removeItem(LS_CONV_KEY); } catch {}
+    const newStartedAt = Date.now();
+    setConvStartedAt(newStartedAt);
     setMessages(FRESH_CONVERSATION);
     setHasUserMessage(false);
   }
 
   function loadConversation(entry: ConversationEntry) {
+    const startedAt = parseInt(entry.id.replace("conv-", ""), 10) || Date.now();
+    setConvStartedAt(startedAt);
     setMessages(entry.messages);
     setHasUserMessage(entry.messages.some((m) => m.role === "user"));
+    // Persist loaded conversation as current so it resumes on next visit
+    saveConv(entry.messages, startedAt);
     onHistoryClose?.();
   }
 
@@ -451,7 +506,10 @@ export default function QuestionsModule({
           <motion.button
             type="button"
             onClick={() => {
-              setMessages(MOCK_CONVERSATION);
+              try { localStorage.removeItem(LS_CONV_KEY); } catch {}
+              const newStartedAt = Date.now();
+              setConvStartedAt(newStartedAt);
+              setMessages(FRESH_CONVERSATION);
               setAttachments([]);
               setInput("");
               adjustHeight(true);

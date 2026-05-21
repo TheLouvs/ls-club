@@ -6,7 +6,7 @@ const credentials = [
 
 export function FounderSection() {
   return (
-    <section className="px-5 py-10 max-w-3xl mx-auto">
+    <section className="px-5 py-8 md:py-10 max-w-3xl mx-auto">
       <div
         className="relative overflow-hidden p-7 md:p-10"
         style={{ background: "#1B3A2A", border: "1px solid #2A4A35", borderRadius: 24 }}

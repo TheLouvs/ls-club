@@ -229,6 +229,7 @@ const CARDS = [
     accentBorder: "rgba(90,173,117,0.6)",
     illustration: IllustrationDiscussion,
     inputMock: true,
+    unavailable: false,
   },
   {
     href: "/ia/swing",
@@ -237,6 +238,7 @@ const CARDS = [
     accentBorder: "rgba(201,168,76,0.6)",
     illustration: IllustrationSwing,
     inputMock: false,
+    unavailable: true,
   },
   {
     href: "/ia/strategie",
@@ -246,6 +248,7 @@ const CARDS = [
     illustration: IllustrationStrategie,
     inputMock: false,
     chatMock: true,
+    unavailable: true,
   },
 ];
 
@@ -277,110 +280,152 @@ export default function IALandingPage() {
         <div
           className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-3 gap-3 px-3 pb-3 overflow-y-auto md:overflow-hidden"
         >
-          {CARDS.map(({ href, label, description, accentBorder, illustration: Illustration, inputMock, chatMock = false }) => (
-            <Link
-              key={href}
-              href={href}
-              className="h-[72vw] md:h-full"
-              style={{
-                borderRadius: 14,
-                overflow: "hidden",
-                border: "2px solid rgba(255,255,255,0.09)",
-                position: "relative",
-                display: "block",
-                textDecoration: "none",
-                transition: "border-color 0.22s, transform 0.22s, box-shadow 0.22s",
-                boxShadow: "0 8px 40px rgba(0,0,0,0.65)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = accentBorder;
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-3px) scale(1.005)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 60px rgba(0,0,0,0.75)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.09)";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0) scale(1)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 40px rgba(0,0,0,0.65)";
-              }}
-            >
-              {/* Illustration pleine carte */}
-              <div className="absolute inset-0">
-                <Illustration />
-              </div>
+          {CARDS.map(({ href, label, description, accentBorder, illustration: Illustration, inputMock, chatMock = false, unavailable = false }) => {
+            const cardStyle: React.CSSProperties = {
+              borderRadius: 14,
+              overflow: "hidden",
+              border: `2px solid ${unavailable ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.09)"}`,
+              position: "relative",
+              display: "block",
+              textDecoration: "none",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.65)",
+              cursor: unavailable ? "not-allowed" : "pointer",
+              transition: unavailable ? "none" : "border-color 0.22s, transform 0.22s, box-shadow 0.22s",
+            };
 
-              {/* Gradient + titre + description en bas — style TrackMan */}
-              <div
-                className="absolute bottom-0 left-0 right-0"
-                style={{
-                  padding: (inputMock || chatMock) ? "90px 18px 14px" : "90px 22px 26px",
-                  background: "linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.78) 40%, transparent 100%)",
-                }}
-              >
-                <p style={{
-                  color: "#ffffff",
-                  fontSize: "clamp(24px, 6vw, 30px)",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  lineHeight: 1,
-                  marginBottom: 8,
-                  textAlign: "center",
-                  textShadow: "0 2px 12px rgba(0,0,0,0.6)",
-                }}>
-                  {label}
-                </p>
-                <p style={{
-                  color: "rgba(210,225,215,0.72)",
-                  fontSize: 12,
-                  lineHeight: 1.55,
-                  textAlign: "center",
-                  marginBottom: (inputMock || chatMock) ? 10 : 0,
-                }}>
-                  {description}
-                </p>
+            const inner = (
+              <>
+                {/* Illustration pleine carte */}
+                <div className="absolute inset-0" style={unavailable ? { filter: "grayscale(0.7) brightness(0.45)" } : {}}>
+                  <Illustration />
+                </div>
 
-                {/* Input bar mock — Discussion uniquement */}
-                {inputMock && (
-                  <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl"
-                    style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(10px)" }}>
-                    <p className="flex-1 text-[11px]" style={{ color: "rgba(180,200,185,0.45)" }}>
-                      Posez votre question…
-                    </p>
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: "#5aad75" }}>
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M1 9L9 5L1 1V4.5L6.5 5L1 5.5V9Z" fill="#071009" />
+                {/* Overlay sombre supplémentaire pour les cartes indisponibles */}
+                {unavailable && (
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
+                )}
+
+                {/* Badge "Bientôt disponible" centré */}
+                {unavailable && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-full"
+                      style={{
+                        background: "rgba(10,16,12,0.82)",
+                        border: "1px solid rgba(255,255,255,0.14)",
+                        backdropFilter: "blur(12px)",
+                      }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+                        <path d="M8 4.5V8.5L10.5 10" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.55)", textTransform: "uppercase" }}>
+                        Bientôt disponible
+                      </span>
                     </div>
                   </div>
                 )}
 
-                {/* Chat strip — Stratégie uniquement */}
-                {chatMock && (
-                  <div className="flex flex-col gap-1.5">
-                    <div className="px-3 py-2 rounded-xl"
-                      style={{ background: "rgba(106,176,217,0.13)", border: "1px solid rgba(106,176,217,0.22)", backdropFilter: "blur(8px)" }}>
-                      <p className="text-[10px] leading-snug" style={{ color: "rgba(180,220,255,0.82)" }}>
-                        Évitez le bunker gauche à 180m, visez le côté droit du fairway
+                {/* Gradient + titre + description en bas */}
+                <div
+                  className="absolute bottom-0 left-0 right-0"
+                  style={{
+                    padding: (inputMock || chatMock) ? "90px 18px 14px" : "90px 22px 26px",
+                    background: "linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.78) 40%, transparent 100%)",
+                  }}
+                >
+                  <p style={{
+                    color: unavailable ? "rgba(255,255,255,0.35)" : "#ffffff",
+                    fontSize: "clamp(24px, 6vw, 30px)",
+                    fontWeight: 900,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    lineHeight: 1,
+                    marginBottom: 8,
+                    textAlign: "center",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+                  }}>
+                    {label}
+                  </p>
+                  <p style={{
+                    color: unavailable ? "rgba(210,225,215,0.28)" : "rgba(210,225,215,0.72)",
+                    fontSize: 12,
+                    lineHeight: 1.55,
+                    textAlign: "center",
+                    marginBottom: (inputMock || chatMock) ? 10 : 0,
+                  }}>
+                    {description}
+                  </p>
+
+                  {/* Input bar mock — Discussion uniquement */}
+                  {inputMock && !unavailable && (
+                    <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl"
+                      style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(10px)" }}>
+                      <p className="flex-1 text-[11px]" style={{ color: "rgba(180,200,185,0.45)" }}>
+                        Posez votre question…
                       </p>
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
-                      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
-                      <p className="flex-1 text-[10px]" style={{ color: "rgba(160,190,210,0.38)" }}>
-                        Posez votre question stratégique…
-                      </p>
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: "#6ab0d9" }}>
-                        <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
-                          <path d="M1 9L9 5L1 1V4.5L6.5 5L1 5.5V9Z" fill="#040c12" />
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ background: "#5aad75" }}>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M1 9L9 5L1 1V4.5L6.5 5L1 5.5V9Z" fill="#071009" />
                         </svg>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {/* Chat strip — Stratégie uniquement */}
+                  {chatMock && !unavailable && (
+                    <div className="flex flex-col gap-1.5">
+                      <div className="px-3 py-2 rounded-xl"
+                        style={{ background: "rgba(106,176,217,0.13)", border: "1px solid rgba(106,176,217,0.22)", backdropFilter: "blur(8px)" }}>
+                        <p className="text-[10px] leading-snug" style={{ color: "rgba(180,220,255,0.82)" }}>
+                          Évitez le bunker gauche à 180m, visez le côté droit du fairway
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
+                        <p className="flex-1 text-[10px]" style={{ color: "rgba(160,190,210,0.38)" }}>
+                          Posez votre question stratégique…
+                        </p>
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ background: "#6ab0d9" }}>
+                          <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                            <path d="M1 9L9 5L1 1V4.5L6.5 5L1 5.5V9Z" fill="#040c12" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+
+            return unavailable ? (
+              <div key={href} className="h-[72vw] md:h-full" style={cardStyle}>
+                {inner}
               </div>
-            </Link>
-          ))}
+            ) : (
+              <Link
+                key={href}
+                href={href}
+                className="h-[72vw] md:h-full"
+                style={cardStyle}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = accentBorder;
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-3px) scale(1.005)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 60px rgba(0,0,0,0.75)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.09)";
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0) scale(1)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 40px rgba(0,0,0,0.65)";
+                }}
+              >
+                {inner}
+              </Link>
+            );
+          })}
         </div>
 
       </div>

@@ -23,8 +23,8 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="px-5 py-12 max-w-3xl mx-auto" style={{ background: "#0F2318" }}>
-      <div className="text-center mb-10">
+    <section className="px-5 py-8 md:py-12 max-w-3xl mx-auto" style={{ background: "#0F2318" }}>
+      <div className="text-center mb-8 md:mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#7A8A7A" }}>
           En 3 étapes
         </p>
@@ -33,7 +33,7 @@ export function HowItWorks() {
         </h2>
       </div>
 
-      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-5">
         {/* Dotted connector (desktop only) */}
         <div
           className="hidden md:block absolute top-9 left-[16%] right-[16%] pointer-events-none"
@@ -45,10 +45,26 @@ export function HowItWorks() {
             zIndex: 0,
           }}
         />
+        {/* Vertical connector (mobile only) */}
+        <div
+          className="md:hidden absolute pointer-events-none"
+          style={{
+            left: 31,
+            top: 32,
+            bottom: 32,
+            width: 1,
+            backgroundImage: "linear-gradient(to bottom, #C9A84C 0 6px, transparent 6px 12px)",
+            backgroundSize: "1px 12px",
+            opacity: 0.45,
+            zIndex: 0,
+          }}
+        />
+
         {steps.map(({ n, icon: Icon, title, body }) => (
-          <div key={n} className="relative text-center md:px-2 z-10">
+          <div key={n} className="relative z-10 flex md:flex-col md:items-center md:text-center md:px-2 items-start gap-5 md:gap-0 pb-7 md:pb-0 last:pb-0">
+            {/* Number badge */}
             <div
-              className="mx-auto mb-3 flex items-center justify-center font-serif font-bold"
+              className="flex-shrink-0 flex items-center justify-center font-serif font-bold md:mx-auto md:mb-3"
               style={{
                 width: 64,
                 height: 64,
@@ -62,20 +78,24 @@ export function HowItWorks() {
             >
               {n}
             </div>
-            <div className="flex justify-center mb-3">
-              <div
-                className="flex items-center justify-center rounded-xl"
-                style={{ width: 36, height: 36, background: "rgba(201,168,76,0.1)" }}
-              >
-                <Icon size={18} style={{ color: "#C9A84C" }} />
+            {/* Content */}
+            <div className="flex-1 pt-3 md:pt-0">
+              {/* Icon (desktop only — redundant on mobile) */}
+              <div className="hidden md:flex justify-center mb-3">
+                <div
+                  className="flex items-center justify-center rounded-xl"
+                  style={{ width: 36, height: 36, background: "rgba(201,168,76,0.1)" }}
+                >
+                  <Icon size={18} style={{ color: "#C9A84C" }} />
+                </div>
               </div>
+              <h3 className="font-bold text-base mb-1.5" style={{ color: "#F5F0E8" }}>
+                {title}
+              </h3>
+              <p className="text-sm" style={{ color: "rgba(245,240,232,0.72)", lineHeight: 1.7 }}>
+                {body}
+              </p>
             </div>
-            <h3 className="font-bold text-base mb-1.5" style={{ color: "#F5F0E8" }}>
-              {title}
-            </h3>
-            <p className="text-sm" style={{ color: "rgba(245,240,232,0.72)", lineHeight: 1.7 }}>
-              {body}
-            </p>
           </div>
         ))}
       </div>

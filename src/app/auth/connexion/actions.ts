@@ -14,7 +14,8 @@ export async function login(_prev: unknown, formData: FormData) {
   if (!user) return { error: "Aucun compte trouvé avec cet e-mail." };
   if (!verifyPassword(password, user.passwordHash)) return { error: "Mot de passe incorrect." };
 
-  const isAdmin = email === process.env.ADMIN_EMAIL?.toLowerCase();
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "").toLowerCase().split(",").map((e) => e.trim()).filter(Boolean);
+  const isAdmin = adminEmails.includes(email);
 
   const cookieStore = await cookies();
   cookieStore.set("ls_session", encodeSession({ email, isAdmin }), {
@@ -23,5 +24,5 @@ export async function login(_prev: unknown, formData: FormData) {
     maxAge: 60 * 60 * 24 * 30,
     sameSite: "lax",
   });
-  redirect("/dashboard");
+  redirect(isAdmin ? "/admin" : "/dashboard");
 }

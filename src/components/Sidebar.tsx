@@ -28,7 +28,7 @@ const IA_SUBMENU = [
   { href: "/ia/strategie", icon: Map,           label: "Stratégie",   desc: "Gestion de parcours" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const [iaHovered, setIaHovered] = useState(false);
 
@@ -193,15 +193,17 @@ export default function Sidebar() {
         </div>
         <p className="text-sm font-bold" style={{ color: "#F5F0E8" }}>LS Club</p>
         <p className="text-xs mt-0.5" style={{ color: "rgba(245,240,232,0.45)" }}>Accès illimité · Actif</p>
-        <Link
-          href="/admin"
-          className="flex items-center justify-center gap-1.5 mt-3 py-1.5 rounded-lg text-[11px] font-bold transition-all"
-          style={{ background: "rgba(201,168,76,0.15)", color: "#C9A84C" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.28)"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.15)"; }}
-        >
-          Mode Coach →
-        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="flex items-center justify-center gap-1.5 mt-3 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+            style={{ background: "rgba(201,168,76,0.15)", color: "#C9A84C" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.28)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.15)"; }}
+          >
+            Mode Coach →
+          </Link>
+        )}
       </div>
     </aside>
   );

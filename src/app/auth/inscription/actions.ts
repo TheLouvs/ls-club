@@ -1,9 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getUser, saveUser, hashPassword } from "@/lib/kv";
-import { encodeSession } from "@/lib/session";
+import { getUser, saveUser, hashPassword, saveVerificationCode } from "@/lib/kv";
+import { sendVerificationEmail } from "@/lib/email";
+
+function generateCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
 
 export async function register(_prev: unknown, formData: FormData) {
   const nom = formData.get("nom") as string;
@@ -28,15 +31,19 @@ export async function register(_prev: unknown, formData: FormData) {
     prenom,
     passwordHash: hashPassword(password),
     isAdmin: false,
+    emailVerified: false,
     createdAt: new Date().toISOString(),
   });
 
-  const cookieStore = await cookies();
-  cookieStore.set("ls_session", encodeSession({ email, isAdmin: false }), {
-    httpOnly: true,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: "lax",
-  });
-  redirect("/dashboard");
+  const code = generateCode();
+  await saveVerificationCode(email, code);
+
+  try {
+    await sendVerificationEmail(email, prenom, code);
+  } catch (err) {
+    console.error("[Resend] Erreur envoi email:", err);
+    return { error: `Erreur envoi e-mail : ${err instanceof Error ? err.message : String(err)}` };
+  }
+
+  redirect(`/auth/verification?email=${encodeURIComponent(email)}`);
 }

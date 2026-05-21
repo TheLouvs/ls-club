@@ -249,7 +249,7 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section
-        className="relative overflow-hidden px-5 py-14 md:py-20"
+        className="relative overflow-hidden px-5 py-10 md:py-20"
         style={{ background: "radial-gradient(ellipse at 50% 40%, #132B1E 0%, #0F2318 70%)" }}
       >
         {/* Gold watermark */}
@@ -382,7 +382,8 @@ export default function LandingPage() {
 
           {/* Mockup */}
           <div className="flex justify-center md:justify-end">
-            <AppMockup screen="ia" width={240} float />
+            <span className="block md:hidden"><AppMockup screen="ia" width={195} float /></span>
+            <span className="hidden md:block"><AppMockup screen="ia" width={240} float /></span>
           </div>
         </div>
       </section>
@@ -420,7 +421,7 @@ export default function LandingPage() {
       </section>
 
       {/* PAIN */}
-      <section className="px-5 py-12 max-w-2xl mx-auto">
+      <section className="px-5 py-8 md:py-12 max-w-2xl mx-auto">
         <ScrollReveal>
           <div className="text-center mb-9">
             <p
@@ -544,7 +545,7 @@ export default function LandingPage() {
             return (
               <ScrollReveal key={title}>
                 <div
-                  className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-center relative overflow-hidden"
+                  className="p-5 md:p-8 flex flex-col md:flex-row gap-5 md:gap-8 items-center relative overflow-hidden"
                   style={{
                     background: "#1B3A2A",
                     border: "1px solid #2A4A35",
@@ -618,7 +619,7 @@ export default function LandingPage() {
 
       {/* LOLO IA DEMO */}
       <section
-        className="relative overflow-hidden px-5 py-12"
+        className="relative overflow-hidden px-5 py-8 md:py-12"
         style={{ background: "linear-gradient(145deg, #0F2318 0%, #132B1E 100%)" }}
       >
         <div
@@ -710,7 +711,7 @@ export default function LandingPage() {
       <GoldDivider />
 
       {/* TESTIMONIALS */}
-      <section className="px-5 py-12 max-w-2xl mx-auto">
+      <section className="px-5 py-8 md:py-12 max-w-2xl mx-auto">
         <ScrollReveal>
           <div className="text-center mb-9">
             <p
@@ -747,12 +748,20 @@ export default function LandingPage() {
                 >
                   &ldquo;{text}&rdquo;
                 </p>
-                <div className="flex items-center gap-3">
-                  <Avatar initials={initials} variant={variant} size={44} />
+                <div className="flex flex-wrap items-center gap-3">
+                  <Avatar initials={initials} variant={variant} size={40} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold" style={{ color: "#F5F0E8" }}>
-                      {name}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-bold" style={{ color: "#F5F0E8" }}>
+                        {name}
+                      </p>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                        style={{ background: "rgba(201,168,76,0.12)", color: "#C9A84C" }}
+                      >
+                        {tag}
+                      </span>
+                    </div>
                     <p className="text-xs" style={{ color: "#7A8A7A" }}>
                       {meta}
                     </p>
@@ -760,12 +769,6 @@ export default function LandingPage() {
                       {detail}
                     </p>
                   </div>
-                  <span
-                    className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
-                    style={{ background: "rgba(201,168,76,0.12)", color: "#C9A84C" }}
-                  >
-                    {tag}
-                  </span>
                 </div>
               </div>
             </ScrollReveal>
@@ -802,7 +805,7 @@ export default function LandingPage() {
       </section>
 
       {/* PRICING */}
-      <section className="px-5 py-12 max-w-2xl mx-auto">
+      <section className="px-5 py-8 md:py-12 max-w-2xl mx-auto">
         <ScrollReveal>
           <div className="text-center mb-2">
             <p
@@ -824,7 +827,7 @@ export default function LandingPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid gap-4 sm:grid-cols-2 mt-8">
+        <div className="grid gap-6 sm:gap-4 sm:grid-cols-2 mt-8">
           {/* Mensuel */}
           <ScrollReveal>
             <div
@@ -935,7 +938,7 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="px-5 py-12 max-w-2xl mx-auto">
+      <section className="px-5 py-8 md:py-12 max-w-2xl mx-auto">
         <ScrollReveal>
           <div className="text-center mb-8">
             <h2 className="font-serif font-bold text-2xl md:text-3xl" style={{ color: "#F5F0E8" }}>
@@ -956,21 +959,21 @@ export default function LandingPage() {
               }}
             >
               <summary
-                className="flex items-center justify-between px-4 py-4 cursor-pointer font-semibold text-sm [&::-webkit-details-marker]:hidden select-none"
+                className="flex items-start justify-between px-4 py-4 cursor-pointer font-semibold text-sm [&::-webkit-details-marker]:hidden select-none gap-3"
                 style={{ color: "#F5F0E8", listStyle: "none" }}
               >
-                <span className="flex items-center gap-2.5">
-                  <Icon size={14} style={{ color: "#C9A84C", flexShrink: 0 }} />
-                  {q}
+                <span className="flex items-start gap-2.5 flex-1 min-w-0">
+                  <Icon size={14} className="mt-0.5 flex-shrink-0" style={{ color: "#C9A84C" }} />
+                  <span className="leading-snug">{q}</span>
                 </span>
                 <span
-                  className="ls-faq-icon text-xl flex-shrink-0 ml-3 font-light"
+                  className="ls-faq-icon text-xl flex-shrink-0 font-light mt-0.5"
                   style={{ color: "#C9A84C" }}
                 >
                   +
                 </span>
               </summary>
-              <p className="px-4 pb-4 text-sm leading-relaxed" style={{ color: "rgba(245,240,232,0.72)" }}>
+              <p className="px-4 pb-4 text-sm leading-relaxed" style={{ color: "#F5F0E8" }}>
                 {a}
               </p>
             </details>
@@ -983,7 +986,7 @@ export default function LandingPage() {
 
       {/* CTA FINAL */}
       <section
-        className="relative overflow-hidden px-5 py-16"
+        className="relative overflow-hidden px-5 py-12 md:py-16"
         style={{ background: "linear-gradient(145deg, #0F2318 0%, #132B1E 100%)" }}
       >
         <div
